@@ -26,6 +26,12 @@ class HTTPServer:
         headers = self.parse_header(split_lines[1:])
         print(headers)
 
+        content_length = int(headers.get("Content-Length", 0))
+        if content_length:
+            content_type = headers.get("Content-Type", None)
+            body_bytes = self.read_body(client, leftover_bytes, content_length)
+            print(content_type, body_bytes.decode("utf-8"))
+
     def read_header(self, client):
         buffer = b""
         delimeter = b"\r\n\r\n"
@@ -49,6 +55,16 @@ class HTTPServer:
             key, value = line.split(": ", 1)
             headers[key] = value
         return headers
+
+    def read_body(self, client, leftover_bytes, content_length):
+        body_bytes = leftover_bytes
+        while len(body_bytes) < content_length:
+            chunk = client.recv(min(1024, content_length - len(body_bytes)))
+            if not chunk:
+                raise ConnectionError("The socket connection was closed.")
+
+            body_bytes += chunk
+        return body_bytes
 
     def build_response(self):
         raise NotImplementedError()
