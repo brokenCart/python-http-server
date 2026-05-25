@@ -27,6 +27,7 @@ class HTTPServer:
         headers = self.parse_header(split_lines[1:])
         print(headers)
 
+        body = None
         content_length = int(headers.get("Content-Length", 0))
         if content_length:
             content_type = headers.get("Content-Type", None)
@@ -35,6 +36,15 @@ class HTTPServer:
 
             body = self.parse_body(body_bytes, content_type)
             print(body)
+        
+        response = self.build_response({
+            "version": version,
+            "method": method,
+            "path": path,
+            "headers": headers,
+            "body": body
+        })
+        client.send(response.encode("utf-8"))
         
         print()
 
@@ -79,5 +89,13 @@ class HTTPServer:
             return json.loads(body_bytes)
         raise NotImplementedError()
 
-    def build_response(self):
-        raise NotImplementedError()
+    def build_response(self, req):
+        res_lines = []
+        if req["path"] == "/" and req["method"] == "GET":
+            res_lines.append(f"{req['version']} 200 OK")
+            res_lines.append(f"Content-Type: text/plain")
+            res_lines.append(f"Content-Length: 13")
+            res_lines.append(f"\r\nHello, World!")
+        else:
+            raise NotImplementedError()
+        return "\r\n".join(res_lines)
