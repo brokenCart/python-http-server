@@ -52,8 +52,8 @@ class HTTPServer:
     def parse_header(self, split_lines):
         headers = {}
         for line in split_lines:
-            key, value = line.split(": ", 1)
-            headers[key] = value
+            key, value = line.split(":", 1)
+            headers[key.strip()] = value.strip()
         return headers
 
     def read_body(self, client, leftover_bytes, content_length):
