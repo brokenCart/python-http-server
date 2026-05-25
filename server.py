@@ -1,4 +1,5 @@
 import socket
+import json
 
 
 class HTTPServer:
@@ -30,7 +31,12 @@ class HTTPServer:
         if content_length:
             content_type = headers.get("Content-Type", None)
             body_bytes = self.read_body(client, leftover_bytes, content_length)
-            print(content_type, body_bytes.decode("utf-8"))
+            print(content_type)
+
+            body = self.parse_body(body_bytes, content_type)
+            print(body)
+        
+        print()
 
     def read_header(self, client):
         buffer = b""
@@ -65,6 +71,13 @@ class HTTPServer:
 
             body_bytes += chunk
         return body_bytes
+    
+    def parse_body(self, body_bytes, content_type):
+        if content_type == "text/plain":
+            return body_bytes.decode("utf-8")
+        elif content_type == "application/json":
+            return json.loads(body_bytes)
+        raise NotImplementedError()
 
     def build_response(self):
         raise NotImplementedError()
