@@ -1,5 +1,6 @@
 import socket
 from collections.abc import Callable
+from datetime import datetime
 
 from http_server.request import Request
 from http_server.response import (
@@ -30,6 +31,8 @@ class HTTPServer:
     def start(self) -> None:
         self.server.bind((self.host, self.port))
         self.server.listen(128)
+
+        print(f"Listening at http://{self.host}:{self.port}")
 
         while True:
             client, addr = self.server.accept()
@@ -81,7 +84,14 @@ class HTTPServer:
         request = Request(
             startline["method"], startline["path"], startline["version"], headers, body
         )
-        response_string = self.__handle_request(request).build()
+
+        response = self.__handle_request(request)
+
+        print(
+            f'[{datetime.now()}] "{request.method} {request.path} {request.version}" {response.status_code}'
+        )
+
+        response_string = response.build()
 
         client.send(response_string.encode("utf-8"))
 
