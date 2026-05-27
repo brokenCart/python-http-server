@@ -1,9 +1,11 @@
 import socket
+from collections.abc import Callable
 
 from http_server.request import Request
 from http_server.response import (
     HTTP404_NotFound_Response,
     HTTP405_MethodNotAllowed_Response,
+    Response,
 )
 from http_server.utils.parse_request import (
     parse_body,
@@ -14,22 +16,29 @@ from http_server.utils.read_request import read_body, read_startline_and_header_
 
 
 class HTTPServer:
-    def __init__(self, host, port):
+    host: str
+    port: int
+    server: socket.socket
+    routes: dict[str, dict[str, Callable[[Request], Response]]]
+
+    def __init__(self, host: str, port: int) -> None:
         self.host = host
         self.port = port
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.routes = {}
 
-    def start(self):
+    def start(self) -> None:
         self.server.bind((self.host, self.port))
         self.server.listen(128)
 
         while True:
             client, addr = self.server.accept()
-            self.__handle_client(client, addr)
+            self.__handle_client(client)
             client.close()
 
-    def __register_method(self, method, path, callback):
+    def __register_method(
+        self, method: str, path: str, callback: Callable[[Request], Response]
+    ) -> None:
         route = self.routes.get(path, None)
 
         if not route:
@@ -45,14 +54,18 @@ class HTTPServer:
 
         route[method] = callback
 
-    def get(self, path):
-        def decorator(callback):
+    def get(
+        self, path: str
+    ) -> Callable[[Callable[[Request], Response]], Callable[[Request], Response]]:
+        def decorator(
+            callback: Callable[[Request], Response],
+        ) -> Callable[[Request], Response]:
             self.__register_method("GET", path, callback)
             return callback
 
         return decorator
 
-    def __handle_client(self, client, addr):
+    def __handle_client(self, client: socket.socket) -> None:
         # read and parse headers
         startline_and_header_text, leftover_bytes = read_startline_and_header_text(
             client
@@ -72,7 +85,7 @@ class HTTPServer:
 
         client.send(response.encode("utf-8"))
 
-    def __handle_request(self, request):
+    def __handle_request(self, request: Request) -> Response:
         route = self.routes.get(request.path, None)
 
         if not route:

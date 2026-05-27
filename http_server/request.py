@@ -1,5 +1,21 @@
+from typing import Any
+
+
 class Request:
-    def __init__(self, method, path, version, headers, body):
+    method: str
+    path: str
+    version: str
+    headers: dict[str, str]
+    body: Any
+
+    def __init__(
+        self,
+        method: str,
+        path: str,
+        version: str,
+        headers: dict[str, str],
+        body: Any,
+    ) -> None:
         self.method = method
         self.path = path
         self.version = version

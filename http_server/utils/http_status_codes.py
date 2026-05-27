@@ -1,4 +1,4 @@
-HTTP_STATUS_CODES = {
+HTTP_STATUS_CODES: dict[int, str] = {
     100: "Continue",
     101: "Switching Protocols",
     102: "Processing",

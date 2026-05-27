@@ -1,4 +1,7 @@
-def read_startline_and_header_text(client):
+import socket
+
+
+def read_startline_and_header_text(client: socket.socket) -> tuple[str, bytes]:
     buffer = b""
     delimeter = b"\r\n\r\n"
 
@@ -16,7 +19,9 @@ def read_startline_and_header_text(client):
     return header_text, leftover_bytes
 
 
-def read_body(client, leftover_bytes, headers):
+def read_body(
+    client: socket.socket, leftover_bytes: bytes, headers: dict[str, str]
+) -> bytes | None:
     content_type = headers.get("Content-Type", None)
     content_length = int(headers.get("Content-Length", 0))
 
@@ -28,7 +33,7 @@ def read_body(client, leftover_bytes, headers):
         )
 
     if not both and not atleast_one:
-        return
+        return None
 
     body_bytes = leftover_bytes
     while len(body_bytes) < content_length:

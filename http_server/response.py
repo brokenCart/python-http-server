@@ -1,19 +1,31 @@
 import json
+from typing import Any
 
 from http_server.utils.http_status_codes import HTTP_STATUS_CODES
 
 
 class Response:
-    def __init__(self, status_code, version="HTTP/1.1", headers={}, body=None):
+    status_code: int
+    version: str
+    headers: dict[str, str]
+    body: Any
+
+    def __init__(
+        self,
+        status_code: int,
+        version: str = "HTTP/1.1",
+        headers: dict[str, str] = {},
+        body: Any = None,
+    ) -> None:
         self.status_code = status_code
         self.version = version
         self.headers = headers
         self.body = body
 
-    def set_header(self, key, value):
+    def set_header(self, key: str, value: str) -> None:
         self.headers[key.strip()] = value.strip()
 
-    def build(self):
+    def build(self) -> str:
         delimeter = "\r\n"
         response_string = (
             f"{self.version} {self.status_code} {HTTP_STATUS_CODES[self.status_code]}"
@@ -28,35 +40,47 @@ class Response:
         response_string += delimeter + body_string
         return response_string
 
-    def to_string(self, bytes):
+    def to_string(self, bytes: Any) -> str:
         raise NotImplementedError()
 
 
 class TextResponse(Response):
-    def __init__(self, status_code, version="HTTP/1.1", headers={}, body=None):
+    def __init__(
+        self,
+        status_code: int,
+        version: str = "HTTP/1.1",
+        headers: dict[str, str] = {},
+        body: bytes | None = None,
+    ) -> None:
         super().__init__(status_code, version, headers, body)
         self.set_header("Content-Type", "text/plain")
 
-    def to_string(self, bytes):
+    def to_string(self, bytes: bytes) -> str:
         return bytes.decode("utf-8")
 
 
 class JSONResponse(Response):
-    def __init__(self, status_code, version="HTTP/1.1", headers={}, body=None):
+    def __init__(
+        self,
+        status_code: int,
+        version: str = "HTTP/1.1",
+        headers: dict[str, str] = {},
+        body: Any = None,
+    ) -> None:
         super().__init__(status_code, version, headers, body)
         self.set_header("Content-Type", "application/json")
 
-    def to_string(self, bytes):
+    def to_string(self, bytes: Any) -> str:
         return json.dumps(bytes)
 
 
 class HTTP404_NotFound_Response(JSONResponse):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__(404, body={"error": "404 Not Found", "message": message})
 
 
 class HTTP405_MethodNotAllowed_Response(JSONResponse):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__(
             405, body={"error": "405 Method Not Allowed", "message": message}
         )
