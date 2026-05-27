@@ -81,9 +81,9 @@ class HTTPServer:
         request = Request(
             startline["method"], startline["path"], startline["version"], headers, body
         )
-        response = self.__handle_request(request).build()
+        response_string = self.__handle_request(request).build()
 
-        client.send(response.encode("utf-8"))
+        client.send(response_string.encode("utf-8"))
 
     def __handle_request(self, request: Request) -> Response:
         route = self.routes.get(request.path, None)
