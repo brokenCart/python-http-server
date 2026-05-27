@@ -1,10 +1,10 @@
-from server import HTTPServer
+from http_server.server import HTTPServer
+from http_server.response import TextResponse
 
+serv = HTTPServer("localhost", 8000)
 
-def main():
-    serv = HTTPServer("localhost", 8000)
-    serv.start()
+@serv.get("/")
+def hello(request):
+    return TextResponse(200, body=b"Hello, World!")
 
-
-if __name__ == "__main__":
-    main()
+serv.start()
