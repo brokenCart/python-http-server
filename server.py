@@ -97,5 +97,9 @@ class HTTPServer:
             res_lines.append(f"Content-Length: 13")
             res_lines.append(f"\r\nHello, World!")
         else:
-            raise NotImplementedError()
+            res_lines.append(f"{req['version']} 404 Not Found")
+            res_lines.append(f"Content-Type: application/json")
+            body = json.dumps({"error": "Resource not found", "detail": f"{req['path']} does not exist"})
+            res_lines.append(f"Content-Length: {len(body)}")
+            res_lines.append("\r\n" + body)
         return "\r\n".join(res_lines)
