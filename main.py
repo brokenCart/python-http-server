@@ -7,7 +7,7 @@ serv = HTTPServer("localhost", 8000)
 
 @serv.get("/")
 def hello(request: Request) -> TextResponse:
-    return TextResponse(200, body=b"Hello, World!")
+    return TextResponse(200, body="Hello, World!")
 
 
 @serv.get("/json/")

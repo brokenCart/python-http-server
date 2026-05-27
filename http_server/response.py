@@ -40,7 +40,7 @@ class Response:
         response_string += delimeter + body_string
         return response_string
 
-    def to_string(self, bytes: Any) -> str:
+    def to_string(self, b: Any) -> str:
         raise NotImplementedError()
 
 
@@ -55,8 +55,10 @@ class TextResponse(Response):
         super().__init__(status_code, version, headers, body)
         self.set_header("Content-Type", "text/plain")
 
-    def to_string(self, bytes: bytes) -> str:
-        return bytes.decode("utf-8")
+    def to_string(self, b: bytes | str) -> str:
+        if type(b) == str:
+            return b
+        return b.decode("utf-8")
 
 
 class JSONResponse(Response):
@@ -70,8 +72,8 @@ class JSONResponse(Response):
         super().__init__(status_code, version, headers, body)
         self.set_header("Content-Type", "application/json")
 
-    def to_string(self, bytes: Any) -> str:
-        return json.dumps(bytes)
+    def to_string(self, b: Any) -> str:
+        return json.dumps(b)
 
 
 class HTTP404_NotFound_Response(JSONResponse):
