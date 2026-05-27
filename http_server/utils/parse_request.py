@@ -1,13 +1,11 @@
 import json
 
+
 def parse_startline(startline_and_header_text):
     split_lines = startline_and_header_text.split("\r\n")
     method, path, version = split_lines[0].split()
-    return {
-        "method": method,
-        "path": path,
-        "version": version
-    }, split_lines[1:]
+    return {"method": method, "path": path, "version": version}, split_lines[1:]
+
 
 def parse_header_lines(header_lines):
     headers = {}
@@ -15,6 +13,7 @@ def parse_header_lines(header_lines):
         key, value = line.split(":", 1)
         headers[key.strip()] = value.strip()
     return headers
+
 
 def parse_body(body_bytes, headers):
     if not body_bytes:

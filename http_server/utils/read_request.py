@@ -15,6 +15,7 @@ def read_startline_and_header_text(client):
     header_text = header_bytes.decode("utf-8")
     return header_text, leftover_bytes
 
+
 def read_body(client, leftover_bytes, headers):
     content_type = headers.get("Content-Type", None)
     content_length = int(headers.get("Content-Length", 0))
@@ -22,8 +23,10 @@ def read_body(client, leftover_bytes, headers):
     both = all([content_type, content_length])
     atleast_one = any([content_type, content_length])
     if not both and atleast_one:
-        raise ValueError("Bad Request: Both Content-Type and Content-Length headers are required to read body")
-    
+        raise ValueError(
+            "Bad Request: Both Content-Type and Content-Length headers are required to read body"
+        )
+
     if not both and not atleast_one:
         return
 

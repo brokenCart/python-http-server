@@ -2,7 +2,6 @@ HTTP_STATUS_CODES = {
     100: "Continue",
     101: "Switching Protocols",
     102: "Processing",
-
     200: "OK",
     201: "Created",
     202: "Accepted",
@@ -10,7 +9,6 @@ HTTP_STATUS_CODES = {
     204: "No Content",
     205: "Reset Content",
     206: "Partial Content",
-
     300: "Multiple Choices",
     301: "Moved Permanently",
     302: "Found",
@@ -18,7 +16,6 @@ HTTP_STATUS_CODES = {
     304: "Not Modified",
     307: "Temporary Redirect",
     308: "Permanent Redirect",
-
     400: "Bad Request",
     401: "Unauthorized",
     402: "Payment Required",
@@ -42,7 +39,6 @@ HTTP_STATUS_CODES = {
     425: "Too Early",
     426: "Upgrade Required",
     429: "Too Many Requests",
-
     500: "Internal Server Error",
     501: "Not Implemented",
     502: "Bad Gateway",
